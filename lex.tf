@@ -31,20 +31,19 @@ resource "aws_lex_bot" "dental_appointment_bot" {
 
   intent {
     intent_name = aws_lex_intent.schedule_appointment.name
-    intent_version = "1"
+    intent_version = "$LATEST" # Use $LATEST for built-in intents
   }
 
   intent {
     intent_name = aws_lex_intent.cancel_appointment.name
-    intent_version = "1"
+    intent_version = "$LATEST" # Use $LATEST for built-in intents
   }
 
   intent {
     intent_name = aws_lex_intent.get_appointment_details.name
-    intent_version = "1"
+    intent_version = "$LATEST" # Use $LATEST for built-in intents
   }
 }
-
 resource "aws_lex_intent" "schedule_appointment" {
   name             = "ScheduleAppointment"
   description      = "Intent to schedule dental appointments"
@@ -52,7 +51,7 @@ resource "aws_lex_intent" "schedule_appointment" {
 
   sample_utterances = [
     "I want to schedule an appointment.",
-    "Can I book a dentist appointment?",
+    "Can I book a dentist appointment.",
     "I need to set up a dental checkup.",
   ]
 
@@ -82,7 +81,6 @@ resource "aws_lex_intent" "schedule_appointment" {
     priority    = 1
     slot_constraint   = "Required"
     slot_type         = "AMAZON.DATE"
-    slot_type_version = "$$LATEST"
 
     sample_utterances = ["I want to schedule an appointment on {Date}"]
 
@@ -91,7 +89,7 @@ resource "aws_lex_intent" "schedule_appointment" {
 
       message {
         content_type = "PlainText"
-        content = "On what date would you like to schedule the appointment?"
+        content = "On what date would you like to schedule the appointment"
       }
     }
   }
@@ -102,7 +100,6 @@ resource "aws_lex_intent" "schedule_appointment" {
     priority    = 2
     slot_constraint   = "Required"
     slot_type         = "AMAZON.TIME"
-    slot_type_version = "$$LATEST"
 
     sample_utterances = ["I want to schedule an appointment at {Time}"]
 
@@ -111,7 +108,7 @@ resource "aws_lex_intent" "schedule_appointment" {
 
       message {
         content_type = "PlainText"
-        content = "At what time would you like to schedule the appointment?"
+        content = "At what time would you like to schedule the appointment"
       }
     }
   }
@@ -154,7 +151,6 @@ resource "aws_lex_intent" "cancel_appointment" {
     priority    = 1
     slot_constraint   = "Required"
     slot_type         = "AMAZON.NUMBER"
-    slot_type_version = "$$LATEST"
 
     sample_utterances = ["I want to cancel my appointment with reference {AppointmentReference}"]
 
@@ -176,7 +172,7 @@ resource "aws_lex_intent" "get_appointment_details" {
 
   sample_utterances = [
     "Tell me about my appointment.",
-    "What's the date of my dentist appointment?",
+    "What's the date of my dentist appointment",
     "Give me details about my dental checkup.",
   ]
 
@@ -206,7 +202,6 @@ resource "aws_lex_intent" "get_appointment_details" {
     priority    = 1
     slot_constraint   = "Required"
     slot_type         = "AMAZON.NUMBER"
-    slot_type_version = "$$LATEST"
 
     sample_utterances = ["Tell me about my appointment with reference {AppointmentReference}"]
 
