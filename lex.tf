@@ -21,7 +21,7 @@ resource "aws_lex_bot" "restaurant_order_bot" {
     max_attempts = 2
     message {
       content_type = "PlainText"
-      content = "I didn't understand you, what would you like to order?"
+      content = "I didn't understand you, what would you like to order"
     }
   }
 
@@ -45,6 +45,39 @@ resource "aws_lex_bot" "restaurant_order_bot" {
   }
 }
 
+resource "aws_lex_slot_type" "menu" {
+  description = "Enumeration representing possible food items on the menu"
+  create_version = false
+
+  enumeration_value {
+    value = "burger"
+  }
+
+  enumeration_value {
+    value = "pizza"
+  }
+
+  enumeration_value {
+    value = "pasta"
+  }
+
+  enumeration_value {
+    value = "salad"
+  }
+
+  enumeration_value {
+    value = "sandwich"
+  }
+
+  enumeration_value {
+    value = "sushi"
+  }
+
+  name                     = "FoodItems"
+  value_selection_strategy = "ORIGINAL_VALUE"
+}
+
+
 resource "aws_lex_intent" "order_food" {
   name = "OrderFood"
   description = "Intent to order food from a restaurant"
@@ -52,12 +85,12 @@ resource "aws_lex_intent" "order_food" {
 
   sample_utterances = [
     "I want to order food.",
-    "Can I get some food from your restaurant?",
+    "Can I get some food from your restaurant.",
     "I'd like to place an order for delivery.",
-    "What's on the menu today?",
-    "How can I place an order for takeout?",
-    "I'm hungry. What can I order?",
-    "Do you have any specials for today?",
+    "What's on the menu today.",
+    "How can I place an order for takeout.",
+    "I'm hungry. What can I order.",
+    "Do you have any specials for today.",
     "I need to order some food for pickup.",
     "Tell me about your food options.",
     "I'm looking to get some food delivered."
@@ -85,19 +118,20 @@ resource "aws_lex_intent" "order_food" {
 
   slot {
     name = "OrderItems"
+    slot_type_version = "$LATEST"
     description = "The items to be ordered"
     priority = 1
-    slot_constraint = "Required"
-    slot_type = "CUSTOM_FOOD_ITEMS" # You can define a custom slot type for food items
+    slot_constraint = "Optional"
+    slot_type = aws_lex_slot_type.menu.name # You can define a custom slot type for food items
 
-    sample_utterances = ["I want to order {OrderItems}"]
+    sample_utterances = ["I want to order a {OrderItems}"]
 
     value_elicitation_prompt {
       max_attempts = 2
 
       message {
         content_type = "PlainText"
-        content = "What items would you like to order? Please provide a list of items and any special requests."
+        content = "What items would you like to order. Please provide a list of items and any special requests."
       }
     }
   }
@@ -112,13 +146,8 @@ resource "aws_lex_intent" "cancel_order" {
     "I want to cancel my order.",
     "Cancel my food order.",
     "I need to change my order.",
-    "Can I modify my order?",
-    "Is it possible to cancel my food delivery?",
-    "I'd like to change my order details.",
-    "I changed my mind, I want to cancel my order.",
-    "How can I update my order?",
-    "I have a change in my food order.",
-    "Is it too late to cancel my order?"
+    "Can I modify my order."
+   
 ]
 
   confirmation_prompt {
@@ -166,18 +195,26 @@ resource "aws_lex_intent" "get_order_status" {
   description = "Intent to retrieve order status"
   create_version = false
 
+ 
   sample_utterances = [
     "Tell me about my order.",
-    "What's the status of my food order?",
+
     "Give me details about my delivery.",
-    "Can you provide information on my order?",
+   
     "I'd like to know the status of my delivery.",
-    "Check the status of my food order, please.",
+    "Check the status of my food order please.",
     "Tell me about my recent order.",
-    "What's the update on my food delivery?",
-    "Can you give me an update on my order?",
-    "I want to track my food order."
-]
+   
+    # "What's the status of my order with order number {OrderNumber}?",
+    # "Give me details about my delivery with order number {OrderNumber}.",
+    # "I'd like to check the status of my order with order number {OrderNumber}.",
+    # "Can you provide information about my order with order number {OrderNumber}?",
+    # "Check my order status for order number {OrderNumber}.",
+    # "I want to know the status of my order with order number {OrderNumber}.",
+    # "Please give me updates on my order with order number {OrderNumber}.",
+    # "What can you tell me about my order with order number {OrderNumber}?",
+    # "Provide me with the status of my order with order number {OrderNumber}."
+  ]
 
   confirmation_prompt {
     max_attempts = 2
@@ -203,22 +240,21 @@ resource "aws_lex_intent" "get_order_status" {
     name = "OrderNumber"
     description = "The order number"
     priority = 1
-    slot_constraint = "Required"
+    slot_constraint = "Optional"
     slot_type = "AMAZON.NUMBER"
 
     sample_utterances = [
-    "Tell me about my order with order number {OrderNumber}",
-    "What's the status of my order with order number {OrderNumber}?",
-    "Give me details about my delivery with order number {OrderNumber}.",
-    "I'd like to check the status of my order with order number {OrderNumber}.",
-    "Can you provide information about my order with order number {OrderNumber}?",
-    "Check my order status for order number {OrderNumber}.",
-    "I want to know the status of my order with order number {OrderNumber}.",
-    "Please give me updates on my order with order number {OrderNumber}.",
-    "What can you tell me about my order with order number {OrderNumber}?",
-    "Provide me with the status of my order with order number {OrderNumber}."
+    # "Tell me about my order.",
+    "What's the status of my order {OrderNumber}",
+    # "Give me details about my delivery.",
+    # "I'd like to check the status of my order.",
+    # "Can you provide information about my order.",
+    # "Check my order status.",
+    # "I want to know the status of my order.",
+    # "Please give me updates on my order.",
+    # "What can you tell me about my order.",
+    # "Provide me with the status of my order."
 ]
-
     value_elicitation_prompt {
       max_attempts = 2
 
